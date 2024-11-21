@@ -1,26 +1,43 @@
-import wx, wx.media
+from customtkinter import *
+from tkinter import *
+from tkVideoPlayer import TkinterVideo
 
+# Base window setup & styling
+app = CTk()
+app.geometry("1000x600")
+app.title("SKTrack v0.1.a")
+set_appearance_mode("light")
+app.iconbitmap("assets/vertex_icon.ico")
+# We have to use light mode for now due to the lack
+# of menubar and other widgets' customization
 
-class SKFrame(wx.Frame):
-    def __init__(self, parent, title):
-        wx.Frame.__init__(self, parent, title=title, size=(800, 600))
-        menuBar = wx.MenuBar()
-        fileMenu = wx.Menu()
+# Main menubar & menu setup
+menubar = Menu(app)
+filemenu = Menu(menubar, tearoff=0)
+editmenu = Menu(menubar, tearoff=0)
 
-        importVid = wx.MenuItem(fileMenu, 100, text="Import Video", kind=wx.ITEM_NORMAL)
-        exportVid = wx.MenuItem(fileMenu, 110, text="Export Video", kind=wx.ITEM_NORMAL)
-        fileMenu.Append(importVid)
-        fileMenu.Append(exportVid)
+filemenu.add_command(label="Import", command="")
+filemenu.add_command(label="Export", command="")
+filemenu.add_command(label="Exit", command=app.quit)
 
-        menuBar.Append(fileMenu, "&File")
+editmenu.add_command(label="Appearance", command="")
+editmenu.add_command(label="Overlay", command="")
 
-        self.mediaCtrl = wx.media.MediaCtrl(self, style=wx.SIMPLE_BORDER, szBackend=wx.media.MEDIABACKEND_GSTREAMER)
-        self.media = "C:\\Users\\alexa\\Videos\\HelixSnap3D.mp4"
+menubar.add_cascade(label="File", menu=filemenu)
+menubar.add_cascade(label="Edit", menu=editmenu)
 
-        self.SetMenuBar(menuBar)
-        self.Show(True)
+# Video player
+videoplayer = TkinterVideo(master=app, scaled=True)
+videoplayer.pack(expand=True, fill='both')
 
+# App composition and entrypoint
+app.config(menu=menubar)
+app.mainloop()
 
-app = wx.App(False)
-frame = SKFrame(None, "SK-Track v0.1a")
-app.MainLoop()
+def loadVideo(path):
+    try:
+        videoplayer.load(path)
+    except TypeError:
+        print(f"Non-video file supplied '{path}'!")
+    except TclError:
+        print(f"Failed to load video '{path}'!")
