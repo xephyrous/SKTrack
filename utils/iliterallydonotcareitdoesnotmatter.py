@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import torch
 
 # GREAT NEWS! YOU HAVE TO USE NUMPY V 1.26.4 AND TORCH 2.3.1 WHY? IDK FUCK YOU THATS WHY!
 # also this: https://mmcv.readthedocs.io/en/latest/get_started/installation.html
@@ -10,6 +11,15 @@ from mmpose.apis import MMPoseInferencer
 
 # https://github.com/rishiswethan/TestingPose/blob/main/experiments/test/test_mmpose.py
 # looked here
+
+device = (
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps"
+    if torch.backends.mps.is_available()
+    else "cpu"
+)
+print(f"Using [{device}] device")
 
 def visualize_keypoints(img_path, keypoints, pairs):
     # Load the image
@@ -31,7 +41,7 @@ def visualize_keypoints(img_path, keypoints, pairs):
 
 
 class Infer3D:
-    def __init__(self, device='cuda'):
+    def __init__(self, device=device):
         self.inferencer = MMPoseInferencer(pose3d='human3d', device=device)
 
     def infer(self, img_path, return_vis=False, save_vis=False):
