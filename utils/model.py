@@ -1,19 +1,19 @@
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
 import time
+
+import cv2
+import matplotlib.pyplot as plt
 import torch
-
-# GREAT NEWS! YOU HAVE TO USE NUMPY V 1.26.4 AND TORCH 2.3.1 WHY? IDK FUCK YOU THATS WHY!
-# also this: https://mmcv.readthedocs.io/en/latest/get_started/installation.html
-
 from mmpose.apis import MMPoseInferencer
 
 from utils import video
 
+# GREAT NEWS! YOU HAVE TO USE NUMPY V 1.26.4 AND TORCH 2.3.1 WHY? IDK FUCK YOU THATS WHY!
+# also this: https://mmcv.readthedocs.io/en/latest/get_started/installation.html
+
 # https://github.com/rishiswethan/TestingPose/blob/main/experiments/test/test_mmpose.py
 # looked here
 # yeah turns out basically all this code has been written before
+# still suffered tho
 
 device = (
     "cuda"
@@ -49,7 +49,7 @@ class Infer3D:
         output(f"Using [{device}] device")
         self.inferencer = MMPoseInferencer(pose3d='human3d', device=device)
 
-    def infer(self, img_path, return_vis=False, save_vis=False):
+    def infer_image(self, img_path, return_vis=False, save_vis=False):
         output_dir = "vis" if save_vis else None
 
         result_generator = self.inferencer(img_path, show=False, out_dir=output_dir, return_vis=return_vis)
@@ -64,17 +64,24 @@ class Infer3D:
         else:
             return preds
 
-    def infer_video(self, video_path, return_vis=True, show_vis=False):
+    def infer_video(self, video_path, return_vis=True, adjusted_fps = 0):
 
-        frames = video.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=3, output=self.output, print_flag=True)
+        fps = adjusted_fps if adjusted_fps > 0 else cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
+
+        frames = video.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=fps, print_flag=True)
+
+        total_frames = len(frames)
+        self.output("len(frames): ", total_frames)
+
         result_generator = self.inferencer(frames, show=False, out_dir=None, return_vis=return_vis)
 
-        # results = next(result_generator)
-        # print("results: ", results)
+        results = next(result_generator)
 
         visualisations = []
         preds = []
+
         start_time = time.time()
+
         for result in result_generator:
             plt.clf()  # Clear the plot
 
@@ -84,9 +91,11 @@ class Infer3D:
                 vis = result['visualization'][0]
                 visualisations.append(vis)
 
-                if show_vis:
-                    plt.imshow(vis)
-                    plt.pause(0.01)  # Pause for 50 ms
+            finished_perc = int(len(preds)/total_frames*20)
+
+            print(('\rLOADING VISUALS -> [' + ("="*finished_perc) + (' '*(20-finished_perc)) + ']'), end='')
+
+        print(('\rLOADING VISUALS -> [' + ("="*20) + '] -> COMPLETE'), end='\n') # CLEAR PROGRESS BAR LINE!!!
 
         plt.clf()  # Clear the plot
         time_taken = time.time() - start_time
@@ -95,6 +104,4 @@ class Infer3D:
         self.output(f"Total Time: {round(time_taken, 3)}s")
         self.output(f"Time Per Frame: {round(time_taken / len(frames), 3)}s")
 
-# infer3d = Infer3D()
-# results = infer3d.infer(img_path, return_vis=True, show_vis=True)
-# uhh hurrr do this ^^^
+        return visualisations
