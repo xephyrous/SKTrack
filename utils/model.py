@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import torch
 from mmpose.apis import MMPoseInferencer
 
-from utils import vidya
+from utils import video
 
 # GREAT NEWS! YOU HAVE TO USE NUMPY V 1.26.4 AND TORCH 2.3.1 WHY? IDK FUCK YOU THATS WHY!
 # also this: https://mmcv.readthedocs.io/en/latest/get_started/installation.html
@@ -22,7 +22,6 @@ device = (
     if torch.backends.mps.is_available()
     else "cpu"
 )
-print(f"Using [{device}] device")
 
 
 def visualize_keypoints(img_path, keypoints, pairs):
@@ -32,7 +31,7 @@ def visualize_keypoints(img_path, keypoints, pairs):
 
     # Normalize keypoints to the size of the image
     height, width, _ = img.shape
-    keypoints = [(int(x*width), int(y*height)) for x, y, _ in keypoints]
+    keypoints = [(int(x * width), int(y * height)) for x, y, _ in keypoints]
 
     # Draw keypoints and lines on the image
     for point in keypoints:
@@ -45,7 +44,9 @@ def visualize_keypoints(img_path, keypoints, pairs):
 
 
 class Infer3D:
-    def __init__(self, device=device):
+    def __init__(self, output, device=device):
+        self.output = output
+        output(f"Using [{device}] device")
         self.inferencer = MMPoseInferencer(pose3d='human3d', device=device)
 
     def infer_image(self, img_path, return_vis=False, save_vis=False):
@@ -70,7 +71,7 @@ class Infer3D:
         frames = vidya.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=fps, print_flag=True)
 
         total_frames = len(frames)
-        print("len(frames): ", total_frames)
+        self.output("len(frames): ", total_frames)
 
         result_generator = self.inferencer(frames, show=False, out_dir=None, return_vis=return_vis)
 
@@ -92,15 +93,15 @@ class Infer3D:
 
             finished_perc = int(len(preds)/total_frames*20)
 
-            print(('\rLOADING VISUALS -> [' + ("="*finished_perc) + (' '*(20-finished_perc)) + ']'), end='')
+            self.output(('\rLOADING VISUALS -> [' + ("="*finished_perc) + (' '*(20-finished_perc)) + ']'), end='')
 
-        print(('\rLOADING VISUALS -> [' + ("="*20) + '] -> COMPLETE'), end='\n') # CLEAR PROGRESS BAR LINE!!!
+        self.output(('\rLOADING VISUALS -> [' + ("="*20) + '] -> COMPLETE'), end='\n') # CLEAR PROGRESS BAR LINE!!!
 
         plt.clf()  # Clear the plot
         time_taken = time.time() - start_time
 
-        print("num of frames: ", len(frames))
-        print("time_taken: ", time_taken, " seconds")
-        print("per frame: ", time_taken / len(frames), " seconds")
+        self.output(f"Frame Count: {len(frames)}")
+        self.output(f"Total Time: {round(time_taken, 3)}s")
+        self.output(f"Time Per Frame: {round(time_taken / len(frames), 3)}s")
 
         return visualisations

@@ -1,5 +1,4 @@
 import cv2
-# import moviepy.editor as moviepy
 import numpy as np
 
 def convert_video_to_x_fps(vidcap, fps_out, print_flag=True):
