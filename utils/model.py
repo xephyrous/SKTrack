@@ -68,7 +68,7 @@ class Infer3D:
 
         fps = adjusted_fps if adjusted_fps > 0 else cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
 
-        frames = vidya.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=fps, print_flag=True)
+        frames = video.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=fps, print_flag=True)
 
         total_frames = len(frames)
         self.output("len(frames): ", total_frames)
@@ -93,9 +93,9 @@ class Infer3D:
 
             finished_perc = int(len(preds)/total_frames*20)
 
-            self.output(('\rLOADING VISUALS -> [' + ("="*finished_perc) + (' '*(20-finished_perc)) + ']'), end='')
+            print(('\rLOADING VISUALS -> [' + ("="*finished_perc) + (' '*(20-finished_perc)) + ']'), end='')
 
-        self.output(('\rLOADING VISUALS -> [' + ("="*20) + '] -> COMPLETE'), end='\n') # CLEAR PROGRESS BAR LINE!!!
+        print(('\rLOADING VISUALS -> [' + ("="*20) + '] -> COMPLETE'), end='\n') # CLEAR PROGRESS BAR LINE!!!
 
         plt.clf()  # Clear the plot
         time_taken = time.time() - start_time
