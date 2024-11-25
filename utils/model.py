@@ -9,8 +9,11 @@ import torch
 
 from mmpose.apis import MMPoseInferencer
 
+from utils import vidya
+
 # https://github.com/rishiswethan/TestingPose/blob/main/experiments/test/test_mmpose.py
 # looked here
+# yeah turns out basically all this code has been written before
 
 device = (
     "cuda"
@@ -59,44 +62,42 @@ class Infer3D:
         else:
             return preds
 
-    # def infer_video(self, video_path, return_vis=True, show_vis=False):
-    #
-    #     frames = utils.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=3, print_flag=True)
-    #     print("len(frames): ", len(frames))
-    #     result_generator = self.inferencer(frames, show=False, out_dir=None, return_vis=return_vis)
-    #
-    #     # results = next(result_generator)
-    #     # print("results: ", results)
-    #
-    #     visualisations = []
-    #     preds = []
-    #     start_time = time.time()
-    #     for result in result_generator:
-    #         plt.clf()  # Clear the plot
-    #
-    #         preds.append(result['predictions'][0])
-    #
-    #         if return_vis:
-    #             vis = result['visualization'][0]
-    #             visualisations.append(vis)
-    #
-    #             if show_vis:
-    #                 plt.imshow(vis)
-    #                 plt.pause(0.01)  # Pause for 50 ms
-    #
-    #             print("len(visualisations): ", len(visualisations))
-    #             print("len(preds): ", len(preds))
-    #
-    #     plt.clf()  # Clear the plot
-    #     time_taken = time.time() - start_time
-    #
-    #     print("num of frames: ", len(frames))
-    #     print("time_taken: ", time_taken, " seconds")
-    #     print("per frame: ", time_taken / len(frames), " seconds")
+    def infer_video(self, video_path, return_vis=True, show_vis=False):
+
+        frames = vidya.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=3, print_flag=True)
+        print("len(frames): ", len(frames))
+        result_generator = self.inferencer(frames, show=False, out_dir=None, return_vis=return_vis)
+
+        # results = next(result_generator)
+        # print("results: ", results)
+
+        visualisations = []
+        preds = []
+        start_time = time.time()
+        for result in result_generator:
+            plt.clf()  # Clear the plot
+
+            preds.append(result['predictions'][0])
+
+            if return_vis:
+                vis = result['visualization'][0]
+                visualisations.append(vis)
+
+                if show_vis:
+                    plt.imshow(vis)
+                    plt.pause(0.01)  # Pause for 50 ms
+
+                print("len(visualisations): ", len(visualisations))
+                print("len(preds): ", len(preds))
+
+        plt.clf()  # Clear the plot
+        time_taken = time.time() - start_time
+
+        print("num of frames: ", len(frames))
+        print("time_taken: ", time_taken, " seconds")
+        print("per frame: ", time_taken / len(frames), " seconds")
 
 
-
-img_path = '/test_data/man.jpg'   # replace this with your own image path
-
-infer3d = Infer3D()
-results = infer3d.infer(img_path, return_vis=True, show_vis=True)
+# infer3d = Infer3D()
+# results = infer3d.infer(img_path, return_vis=True, show_vis=True)
+# uhh hurrr do this ^^^
