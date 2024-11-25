@@ -1,16 +1,6 @@
-import csv
-import os
-import shutil
-import threading
-import time
-import traceback
-
 import cv2
-import librosa
-import matplotlib.pyplot as plt
-import moviepy.editor as moviepy
+# import moviepy.editor as moviepy
 import numpy as np
-
 
 def convert_video_to_x_fps(vidcap, fps_out, print_flag=True):
     fps_in = vidcap.get(cv2.CAP_PROP_FPS)
