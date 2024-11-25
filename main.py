@@ -73,11 +73,11 @@ def terminalInput(command):
     if not cmd.matchCommand(command.strip(), terminalOutput):
         return
 
-    terminalOutput(command, True)
+    terminalOutput(command, True, command=True)
     commandFuncs[command.strip().split(' ')[0]]()
 
 
-def terminalOutput(text, clearText=True, error=False):
+def terminalOutput(text, clearText=True, error=False, command=False):
     if clearText:
         commandInput.delete("1.0", "end")
 
@@ -90,10 +90,14 @@ def terminalOutput(text, clearText=True, error=False):
                 f.write(f"[{datetime.now().strftime('%H:%M:%S')}] ! {text}\n")
                 terminalText.insert("end", f"[{datetime.now().strftime('%H:%M:%S')}] ", "error")
                 terminalText.insert("end", "⚠︎", "symbol-err")
-                terminalText.insert("end", " " + text + "\n", "error")
+                terminalText.insert("end", f" {text}\n", "error")
+            elif command:
+                f.write(f"[{datetime.now().strftime('%H:%M:%S')}] -> {text}\n")
+                terminalText.insert("end", f"[{datetime.now().strftime('%H:%M:%S')}] ", "command")
+                terminalText.insert("end", "➦", "symbol-cmd")
+                terminalText.insert("end", f" {text}\n", "command")
             else:
-                f.write(f"[{datetime.now().strftime('%H:%M:%S')}] {text}\n")
-                terminalText.insert("end", "[" + datetime.now().strftime("%H:%M:%S") + "] " + text + "\n")
+                terminalText.insert("end", f"[{datetime.now().strftime('%H:%M:%S')}] {text}\n")
             f.close()
         terminalText.config(state="disabled")
 
@@ -144,8 +148,10 @@ terminalText.tag_configure("bold", font=("Consolas", 12, "bold"))
 terminalText.tag_configure("symbol", font=("Consolas", 10, "bold"))
 terminalText.tag_configure("symbol-bold", font=("Consolas", 10, "bold"))
 terminalText.tag_configure("symbol-err", font=("Consolas", 8, "bold"))
+terminalText.tag_configure("symbol-cmd", font=("Consolas", 10, "bold"), foreground="blue")
 terminalText.tag_configure("title", font=("Consolas", 14, "bold"), justify="center")
 terminalText.tag_configure("error", font=("Consolas", 12, "bold"), foreground="red")
+terminalText.tag_configure("command", font=("Consolas", 12, "bold"), foreground="blue")
 
 # Configure starting terminal state
 terminalText.insert("1.0", "[SKTrack Terminal v1.0.a]\n", "title")
@@ -154,7 +160,7 @@ terminalText.config(state="disabled")
 
 # Terminal input
 commandInput = Text(terminalFrame, bg="white", fg="black", font=("Consolas", 12))
-commandInput.place(relx=0, rely=1, relwidth=1, height=20, anchor="sw")
+commandInput.place(relx=0, rely=1, relwidth=1, height=25, anchor="sw")
 commandInput.bind("<Return>", lambda event: terminalInput(commandInput.get("1.0", "end-1c")))
 
 # Video frame
