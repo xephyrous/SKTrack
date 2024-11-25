@@ -9,7 +9,7 @@ import torch
 
 from mmpose.apis import MMPoseInferencer
 
-from utils import vidya
+from utils import video
 
 # https://github.com/rishiswethan/TestingPose/blob/main/experiments/test/test_mmpose.py
 # looked here
@@ -22,7 +22,7 @@ device = (
     if torch.backends.mps.is_available()
     else "cpu"
 )
-print(f"Using [{device}] device")
+
 
 def visualize_keypoints(img_path, keypoints, pairs):
     # Load the image
@@ -31,7 +31,7 @@ def visualize_keypoints(img_path, keypoints, pairs):
 
     # Normalize keypoints to the size of the image
     height, width, _ = img.shape
-    keypoints = [(int(x*width), int(y*height)) for x, y, _ in keypoints]
+    keypoints = [(int(x * width), int(y * height)) for x, y, _ in keypoints]
 
     # Draw keypoints and lines on the image
     for point in keypoints:
@@ -44,7 +44,9 @@ def visualize_keypoints(img_path, keypoints, pairs):
 
 
 class Infer3D:
-    def __init__(self, device=device):
+    def __init__(self, output, device=device):
+        self.output = output
+        output(f"Using [{device}] device")
         self.inferencer = MMPoseInferencer(pose3d='human3d', device=device)
 
     def infer(self, img_path, return_vis=False, save_vis=False):
@@ -64,8 +66,7 @@ class Infer3D:
 
     def infer_video(self, video_path, return_vis=True, show_vis=False):
 
-        frames = vidya.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=3, print_flag=True)
-        print("len(frames): ", len(frames))
+        frames = video.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=3, output=self.output, print_flag=True)
         result_generator = self.inferencer(frames, show=False, out_dir=None, return_vis=return_vis)
 
         # results = next(result_generator)
@@ -87,16 +88,12 @@ class Infer3D:
                     plt.imshow(vis)
                     plt.pause(0.01)  # Pause for 50 ms
 
-                print("len(visualisations): ", len(visualisations))
-                print("len(preds): ", len(preds))
-
         plt.clf()  # Clear the plot
         time_taken = time.time() - start_time
 
-        print("num of frames: ", len(frames))
-        print("time_taken: ", time_taken, " seconds")
-        print("per frame: ", time_taken / len(frames), " seconds")
-
+        self.output(f"Frame Count: {len(frames)}")
+        self.output(f"Total Time: {round(time_taken, 3)}s")
+        self.output(f"Time Per Frame: {round(time_taken / len(frames), 3)}s")
 
 # infer3d = Infer3D()
 # results = infer3d.infer(img_path, return_vis=True, show_vis=True)
