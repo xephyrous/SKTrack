@@ -82,6 +82,7 @@ class Infer3D:
 
         start_time = time.time()
 
+        inc = 0
         for result in result_generator:
             plt.clf()  # Clear the plot
 
@@ -93,9 +94,13 @@ class Infer3D:
 
             finished_perc = int(len(preds)/total_frames*20)
 
-            print(('\rLOADING VISUALS -> [' + ("="*finished_perc) + (' '*(20-finished_perc)) + ']'), end='')
+            if inc == 5:
+                inc = 0
+                self.output(f"Loading Visuals... {round((len(preds)/total_frames) * 100, 1)}%")
 
-        print(('\rLOADING VISUALS -> [' + ("="*20) + '] -> COMPLETE'), end='\n') # CLEAR PROGRESS BAR LINE!!!
+            inc += 1
+
+        self.output(f"Loading Visuals... 100%")
 
         plt.clf()  # Clear the plot
         time_taken = time.time() - start_time
