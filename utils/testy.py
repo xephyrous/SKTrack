@@ -1,7 +1,9 @@
+import sys
+
 from utils.model import Infer3D
 from utils.pipers import visualize_movie
 
-infer3d = Infer3D()
+infer3d = Infer3D(output = sys.stdout)
 
 # INPUT 0 FPS IF YOU WANT TO USE ORIGINAL VIDEO FPS
 # save_path is the way to get to save location
@@ -9,4 +11,7 @@ infer3d = Infer3D()
 # DO NOT ADD .MP4 TO THE FILENAME (probably breaks it idk i didnt test it) :D
 path = visualize_movie(video_path='test_data/3197604-hd_1080_1920_25fps.mp4', save_path='movie', file_name="BOOM", adjusted_fps=2, inferer=infer3d)
 # ^Output                         Input Path^                                     Save At^            File Name^              FPS^         Model^
-print(path) # <-- Location of Video
+print(next(path)) # <-- Location of Video
+
+poses = next(path)
+print(poses[0]) # <-- poses?

@@ -104,4 +104,5 @@ class Infer3D:
         self.output(f"Total Time: {round(time_taken, 3)}s")
         self.output(f"Time Per Frame: {round(time_taken / len(frames), 3)}s")
 
-        return visualisations
+        yield visualisations
+        yield preds
