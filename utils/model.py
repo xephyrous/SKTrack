@@ -1,5 +1,6 @@
 import time
 
+import json
 import cv2
 import matplotlib.pyplot as plt
 import torch
@@ -43,37 +44,40 @@ def visualize_keypoints(img_path, keypoints, pairs):
     return img
 
 
-class Infer3D:
+class InferMedia:
     def __init__(self, output, device=device):
         self.output = output
-        output(f"Using [{device}] device")
-        self.inferencer = MMPoseInferencer(pose3d='human3d', device=device)
+        # output(f"Using [{device}] device")
+        # self.inferencer = MMPoseInferencer('human')
+        # TODO: this should be changed to pass in a custom trained model parameter eventually.
+        self.twoDimInferencer = MMPoseInferencer('human')
+        self.threeDimInferencer = MMPoseInferencer(pose3d='human3d', device=device)
 
-    def infer_image(self, img_path, return_vis=False, save_vis=False):
-        output_dir = "vis" if save_vis else None
+    # def infer_image(self, img_path, return_vis=False, save_vis=False):
+    #     output_dir = "vis" if save_vis else None
+    #
+    #     result_generator = self.twoDimInferencer(img_path, show=False, out_dir=output_dir, return_vis=return_vis)
+    #     result = next(result_generator)
+    #
+    #     preds = result['predictions'][0]
+    #
+    #     if return_vis:
+    #         result_vis = result['visualization'][0]
+    #
+    #         return result_vis, preds
+    #     else:
+    #         return preds
 
-        result_generator = self.inferencer(img_path, show=False, out_dir=output_dir, return_vis=return_vis)
-        result = next(result_generator)
-
-        preds = result['predictions'][0]
-
-        if return_vis:
-            result_vis = result['visualization'][0]
-
-            return result_vis, preds
-        else:
-            return preds
-
-    def infer_video(self, video_path, return_vis=True, adjusted_fps = 0):
+    def infer_video_two_dim(self, video_path, return_vis=True, adjusted_fps = 0):
 
         fps = adjusted_fps if adjusted_fps > 0 else cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
 
         frames = video.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=fps, print_flag=True)
 
         total_frames = len(frames)
-        self.output("len(frames): ", total_frames)
+        # self.output("len(frames): ", total_frames)
 
-        result_generator = self.inferencer(frames, show=False, out_dir=None, return_vis=return_vis)
+        result_generator = self.twoDimInferencer(frames, show=False, out_dir=None, return_vis=return_vis)
 
         results = next(result_generator)
 
@@ -96,18 +100,68 @@ class Infer3D:
 
             if inc == 5:
                 inc = 0
-                self.output(f"Loading Visuals... {round((len(preds)/total_frames) * 100, 1)}%")
+                # self.output(f"Loading Visuals... {round((len(preds)/total_frames) * 100, 1)}%")
 
             inc += 1
 
-        self.output(f"Loading Visuals... 100%")
+        # self.output(f"Loading Visuals... 100%")
 
         plt.clf()  # Clear the plot
         time_taken = time.time() - start_time
 
-        self.output(f"Frame Count: {len(frames)}")
-        self.output(f"Total Time: {round(time_taken, 3)}s")
-        self.output(f"Time Per Frame: {round(time_taken / len(frames), 3)}s")
+        # self.output(f"Frame Count: {len(frames)}")
+        # self.output(f"Total Time: {round(time_taken, 3)}s")
+        # self.output(f"Time Per Frame: {round(time_taken / len(frames), 3)}s")
 
         yield visualisations
         yield preds
+
+
+    def infer_video_three_dim(self, video_path, return_vis=True, adjusted_fps = 0):
+
+        fps = adjusted_fps if adjusted_fps > 0 else cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
+
+        frames = video.convert_video_to_x_fps(cv2.VideoCapture(video_path), fps_out=fps, print_flag=True)
+
+        total_frames = len(frames)
+        # self.output("len(frames): ", total_frames)
+
+        result_generator = self.threeDimInferencer(frames, show=False, out_dir=None, return_vis=return_vis)
+
+        results = next(result_generator)
+
+        visualisations = []
+        preds = []
+
+        start_time = time.time()
+
+        inc = 0
+        for result in result_generator:
+            plt.clf()  # Clear the plot
+
+            preds.append(result['predictions'][0])
+
+            if return_vis:
+                vis = result['visualization'][0]
+                visualisations.append(vis)
+
+            finished_perc = int(len(preds)/total_frames*20)
+
+            if inc == 5:
+                inc = 0
+                # self.output(f"Loading Visuals... {round((len(preds)/total_frames) * 100, 1)}%")
+
+            inc += 1
+
+        # self.output(f"Loading Visuals... 100%")
+
+        plt.clf()  # Clear the plot
+        time_taken = time.time() - start_time
+
+        # self.output(f"Frame Count: {len(frames)}")
+        # self.output(f"Total Time: {round(time_taken, 3)}s")
+        # self.output(f"Time Per Frame: {round(time_taken / len(frames), 3)}s")
+
+        yield visualisations
+        yield preds
+
