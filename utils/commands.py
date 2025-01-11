@@ -1,6 +1,9 @@
 commands = {
-    # "command name": ("arg1 arg2 arg3")
-    "process": ()
+    # "command name": ["arg1", "arg2", "arg3"]
+    "process": [],
+    "import": ["path"],
+    "export": [],
+    "exit": []
 }
 
 
@@ -19,6 +22,8 @@ def matchCommand(commandStr, output):
     if not commands[splitCmd[0]]:
         return True
 
-    if splitCmd.len() - 1 < commands[splitCmd[0]][0].split(' ').len():
+    if len(splitCmd) - 1 != len(commands[splitCmd[0]][0].split(' ')):
         output("Invalid number of arguments", error=True)
         return False
+
+    return True
