@@ -113,8 +113,7 @@ class InferMedia:
         # self.output(f"Total Time: {round(time_taken, 3)}s")
         # self.output(f"Time Per Frame: {round(time_taken / len(frames), 3)}s")
 
-        yield visualisations
-        yield preds
+        return visualisations, preds
 
 
     def infer_video_three_dim(self, video_path, return_vis=True, adjusted_fps = 0):
@@ -162,6 +161,5 @@ class InferMedia:
         # self.output(f"Total Time: {round(time_taken, 3)}s")
         # self.output(f"Time Per Frame: {round(time_taken / len(frames), 3)}s")
 
-        yield visualisations
-        yield preds
+        return visualisations, preds
 

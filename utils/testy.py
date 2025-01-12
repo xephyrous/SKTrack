@@ -12,8 +12,8 @@ inferMedia = InferMedia(stdout)
 # DO NOT ADD .MP4 TO THE FILENAME (probably breaks it idk i didnt test it) :D
 path = visualize_movie(video_path='test_data/3197604-hd_1080_1920_25fps.mp4', save_path='movie/boom.mp4', adjusted_fps=2, inferrer=inferMedia, output=stdout, threeDim=False)
 # ^Output                         Input Path^                                         Save At^                     FPS^         Model^           Output^         3d^
-print(next(path)) # <-- Location of Video
-poses = next(path) # <-- pose points
+print(path[0]) # <-- Location of Video
+poses = path[1] # <-- pose points
 
 #format
 print("-=-=-=-=-=-=-=-=-=-=-=-")

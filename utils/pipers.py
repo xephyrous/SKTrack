@@ -12,7 +12,7 @@ def visualize_movie(video_path, save_path, adjusted_fps, inferrer, output, three
     else:
         results = inferrer.infer_video_two_dim(video_path, return_vis=True, adjusted_fps=fps)
 
-    frames = next(results)
+    frames = results[0]
 
     if len(frames) == 0:
         # output("No results", error=True)
@@ -43,5 +43,4 @@ def visualize_movie(video_path, save_path, adjusted_fps, inferrer, output, three
     # Release the writer
     video_writer.release()
 
-    yield save_path
-    yield next(results)
+    return save_path, results[1]
