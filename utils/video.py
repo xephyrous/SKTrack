@@ -1,11 +1,21 @@
 import cv2
 import numpy as np
 
-def convert_video_to_x_fps(vidcap, fps_out, print_flag=True):
+def convert_video_to_x_fps(vidcap, fps_out, output, print_flag=True):
+    """
+    Converts video to given framerate
+
+    :param vidcap: -- Video to change | Must be in cv2.VideoCapture format
+    :param fps_out: -- Framerate to set video to
+    :param output: -- Console output location
+    :param print_flag: -- Print debug data (default True)
+    :return:
+    """
+
     fps_in = vidcap.get(cv2.CAP_PROP_FPS)
     if print_flag:
-        print("fps_in: ", fps_in)
-        print("fps_out: ", fps_out)
+        output("fps_in: ", fps_in)
+        output("fps_out: ", fps_out)
 
     index_in = -1
     index_out = -1

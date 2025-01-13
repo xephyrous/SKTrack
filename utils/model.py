@@ -50,7 +50,7 @@ class InferMedia:
         output(f"Using [{device}] device")
         # self.inferencer = MMPoseInferencer('human')
         # TODO: this should be changed to pass in a custom trained model parameter eventually.
-        self.twoDimInferencer = MMPoseInferencer('human')
+        self.twoDimInferencer = MMPoseInferencer('human', device=device)
         self.threeDimInferencer = MMPoseInferencer(pose3d='human3d', device=device)
 
     # def infer_image(self, img_path, return_vis=False, save_vis=False):
@@ -69,6 +69,14 @@ class InferMedia:
     #         return preds
 
     def infer_video_two_dim(self, video_path, return_vis=True, adjusted_fps = 0):
+        """
+        Uses built in MMPOSE 2D Inferencer to analyze video
+
+        :param video_path: -- Path to video file
+        :param return_vis: -- Return visualized movie (Default True)
+        :param adjusted_fps: -- adjusted framerate (input 0 for no change)
+        :return:
+        """
 
         fps = adjusted_fps if adjusted_fps > 0 else cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
 
@@ -117,6 +125,14 @@ class InferMedia:
 
 
     def infer_video_three_dim(self, video_path, return_vis=True, adjusted_fps = 0):
+        """
+        Uses built in MMPOSE 3D Inferencer to analyze video
+
+        :param video_path: -- Path to video file
+        :param return_vis: -- Return visualized movie (Default True)
+        :param adjusted_fps: -- adjusted framerate (input 0 for no change)
+        :return:
+        """
 
         fps = adjusted_fps if adjusted_fps > 0 else cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
 

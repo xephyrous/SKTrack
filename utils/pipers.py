@@ -3,6 +3,17 @@ import os.path
 import cv2
 
 def visualize_movie(video_path, save_path, adjusted_fps, inferrer, output, threeDim = False):
+    """
+    Visualize human skeleton in movie and return point data
+
+    :param video_path: -- path to video file
+    :param save_path: -- path to save analyzed video
+    :param adjusted_fps: -- video fps to use (0 to use original fps)
+    :param inferrer: -- InferMedia | Model to use - model.py
+    :param output: -- Console output location
+    :param threeDim: -- Analyze people in 3 dimensions | Default False
+    :return:
+    """
     fps = adjusted_fps if adjusted_fps > 0 else cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
 
     output(f"FPS: {round(fps, 2)}")
