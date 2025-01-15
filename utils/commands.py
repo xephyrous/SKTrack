@@ -3,7 +3,9 @@ commands = {
     "process": [],
     "import": ["path"],
     "export": [],
-    "exit": []
+    "exit": [],
+    "clear": [],
+    "cls": []
 }
 
 

@@ -1,7 +1,8 @@
 import os.path
 import cv2
 
-def visualize_movie(video_path, save_path, adjusted_fps, inferrer, output, threeDim = False):
+
+def visualize_movie(video_path, save_path, adjusted_fps, inferrer, output, threeDim=False):
     """
     Visualize human skeleton in movie and return point data
 
@@ -46,7 +47,7 @@ def visualize_movie(video_path, save_path, adjusted_fps, inferrer, output, three
         # Slow down visual updates
         if inc == 10:
             inc = 0
-            output(f"{int(round((idx/len(frames)) * 100, 1))}% Processed")
+            output(f"{int(round((idx / len(frames)) * 100, 1))}% Processed")
 
         inc += 1
     output("100% Processed")

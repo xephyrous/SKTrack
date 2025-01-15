@@ -1,5 +1,63 @@
+import tkinter
+
 import cv2
 import numpy as np
+from PIL import Image, ImageTk
+
+
+class VideoController:
+    def __init__(self, root, canvas, output):
+        self.root = root
+        self.fps = None
+        self.frameTime = None
+        self.path = None
+        self.data = None
+        self.output = output
+        self.canvas = canvas
+
+        canvas.update()
+        self.size = (canvas.winfo_width(), canvas.winfo_height())
+        self.canvas.config(width=self.size[0], height=self.size[1])
+
+    def loadVideo(self, path):
+        self.path = path
+        self.data = cv2.VideoCapture(path)
+        if not self.data.isOpened():
+            self.output("Failed to load video data!", error=True)
+
+        self.fps = self.data.get(cv2.CAP_PROP_FPS)
+        self.frameTime = 1 / self.fps
+        self.updateFrame(True)
+
+    def updateFrame(self, single=False):
+        res, frame = self.data.read()
+
+        if res:
+            # I DON'T KNOW WHY IT HAS TO BE DOUBLED IN SCALE AND INCREASED BY 20 I'M SORRY
+            # NORMAL SCALING JUST DOESN'T WORK! I HATE TKINTER! I HATE PYTHON! - 11:35 PM
+            resizedFrame = cv2.resize(frame, (self.size[0] * 2 + 20, self.size[1] * 2))
+            frameRgb = cv2.cvtColor(resizedFrame, cv2.COLOR_BGR2RGB)
+            frameImage = Image.fromarray(frameRgb)
+            frameTk = ImageTk.PhotoImage(frameImage)
+
+            self.canvas.create_image(0, 0, anchor=tkinter.NW, image=frameTk)
+            self.canvas.image = frameTk
+
+            if not single:
+                self.root.after(int(self.frameTime * 1000), self.updateFrame())
+        else:
+            # End of video
+            self.data.release()
+
+    def playVideo(self):
+        pass
+
+    def skipEnd(self):
+        pass
+
+    def skipBeginning(self):
+        pass
+
 
 def convert_video_to_x_fps(vidcap, fps_out, output, print_flag=True):
     """
