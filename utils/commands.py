@@ -5,7 +5,10 @@ commands = {
     "export": [],
     "exit": [],
     "clear": [],
-    "cls": []
+    "cls": [],
+    "play": [],
+    "pause": [],
+    "reset": []
 }
 
 

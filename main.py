@@ -20,6 +20,7 @@ from utils.video import VideoController
 loadedVideo = ""
 tempName = ""
 videoController = VideoController
+videoCanvas = None
 
 
 def process():
@@ -28,8 +29,6 @@ def process():
     if not loadedVideo:
         terminalOutput(f"No loaded video to process", error=True)
         return
-
-    print(loadedVideo)
 
     terminalOutput(f"Processing video '{loadedVideo}'")
     tempName = ''.join(random.choices(string.ascii_letters, k=10))
@@ -63,7 +62,7 @@ def terminalImport(args):
         return
 
     loadedVideo = path
-    videoController.loadVideo(loadedVideo, playerSize)
+    videoController.loadVideo(loadedVideo)
     terminalOutput(f"Imported video {path}")
 
 
@@ -92,7 +91,10 @@ commandFuncs = {
     "export": terminalExport,
     "exit": lambda: exit(0),
     "clear": lambda: terminalOutput("", wipe=True),
-    "cls": lambda: terminalOutput("", wipe=True)
+    "cls": lambda: terminalOutput("", wipe=True),
+    "play": lambda: videoController.playVideo(),
+    "pause": lambda: videoController.pauseVideo(),
+    "reset": lambda: videoController.reset()
 }
 
 
@@ -144,7 +146,6 @@ def terminalInput(command):
     if not cmd.matchCommand(command.strip(), terminalOutput):
         return
 
-    print(command.strip().split()[1:])
     terminalOutput(command, True, command=True)
     if len(command.strip().split()) == 1:
         commandFuncs[command.strip().split(' ')[0]]()

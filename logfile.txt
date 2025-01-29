@@ -1,10 +1,5 @@
-Logging started at 2024-11-25 11:29:10.133912
-[11:29:14] ! Unknown command 'is'
-[11:29:17] ! Unknown command 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-[11:29:24] Imported video C:/Users/alexa/Videos/HelixSnap3D.mp4
-[11:29:27] process
-[11:29:27] Processing video 'C:/Users/alexa/Videos/HelixSnap3D.mp4'...
-[11:29:27] Using [cpu] device
-[11:29:46] Frame Count: 16
-[11:29:46] Total Time: 16.649s
-[11:29:46] Time Per Frame: 1.041s
+Logging started at 2025-01-29 11:29:17.257210
+[11:29:17] -> Cleaned generated directory of 0 files
+[11:29:30] -> import "C:\Users\alexa\Videos\person_walking.mp4"
+[11:29:36] -> play
+[11:29:44] -> reset

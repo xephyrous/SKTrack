@@ -1,11 +1,14 @@
 import tkinter
-
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
 
 
 class VideoController:
+    """
+    Controls a canvas for use with video playback and display
+    """
+
     def __init__(self, root, canvas, output):
         self.root = root
         self.fps = None
@@ -14,6 +17,7 @@ class VideoController:
         self.data = None
         self.output = output
         self.canvas = canvas
+        self.pause = False
 
         canvas.update()
         self.size = (canvas.winfo_width(), canvas.winfo_height())
@@ -30,12 +34,15 @@ class VideoController:
         self.updateFrame(True)
 
     def updateFrame(self, single=False):
-        res, frame = self.data.read()
+        if self.pause:
+            return
 
+        res, frame = self.data.read()
         if res:
-            # I DON'T KNOW WHY IT HAS TO BE DOUBLED IN SCALE AND INCREASED BY 20 I'M SORRY
-            # NORMAL SCALING JUST DOESN'T WORK! I HATE TKINTER! I HATE PYTHON! - 11:35 PM
-            resizedFrame = cv2.resize(frame, (self.size[0] * 2 + 20, self.size[1] * 2))
+            self.root.update_idletasks()
+            self.size = (self.canvas.winfo_width(), self.canvas.winfo_height())
+
+            resizedFrame = cv2.resize(frame, self.size, interpolation=cv2.INTER_AREA)
             frameRgb = cv2.cvtColor(resizedFrame, cv2.COLOR_BGR2RGB)
             frameImage = Image.fromarray(frameRgb)
             frameTk = ImageTk.PhotoImage(frameImage)
@@ -44,19 +51,24 @@ class VideoController:
             self.canvas.image = frameTk
 
             if not single:
-                self.root.after(int(self.frameTime * 1000), self.updateFrame())
+                self.root.after(int(self.frameTime * 1000), self.updateFrame)
         else:
             # End of video
             self.data.release()
 
     def playVideo(self):
-        pass
+        self.pause = False
+        self.updateFrame()
+
+    def pauseVideo(self):
+        self.pause = True
 
     def skipEnd(self):
         pass
 
-    def skipBeginning(self):
-        pass
+    def reset(self):
+        self.data.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        self.updateFrame(True)
 
 
 def convert_video_to_x_fps(vidcap, fps_out, output, print_flag=True):
